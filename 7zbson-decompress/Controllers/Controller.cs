@@ -60,6 +60,7 @@ namespace _7zbson_decompress.Controllers
                 outStream.Seek(0L, SeekOrigin.Begin);
                 using (BsonReader reader = new BsonReader((Stream)outStream))
                 {
+                    reader.MaxDepth = 8192;
                     var sb = new StringBuilder();
                     var sw = new StringWriter(sb);
                     using (var jWriter = new JsonTextWriter(sw))
