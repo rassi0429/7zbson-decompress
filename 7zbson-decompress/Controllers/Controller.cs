@@ -43,6 +43,7 @@ namespace _7zbson_decompress.Controllers
 
         [HttpPost]
         [Route("compress")]
+        [Route("")]
         async public Task<FileContentResult> Post()
         {
             using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
