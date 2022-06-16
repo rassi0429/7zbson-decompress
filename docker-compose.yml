@@ -5,4 +5,4 @@ services:
     init: true
     restart: on-failure:3
     ports:
-      - 127.0.0.1:7099:7099
+      - 127.0.0.1:8001:7099

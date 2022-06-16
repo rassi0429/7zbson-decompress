@@ -27,6 +27,7 @@ namespace _7zbson_decompress.Controllers
         }
 
         [HttpGet]
+        [DisableRequestSizeLimit]
         [Route("decompress")]
         public string Get([FromQuery] string id)
         {
@@ -42,6 +43,7 @@ namespace _7zbson_decompress.Controllers
         }
 
         [HttpPost]
+        [DisableRequestSizeLimit]
         [Route("compress")]
         [Route("")]
         async public Task<FileContentResult> Post()
