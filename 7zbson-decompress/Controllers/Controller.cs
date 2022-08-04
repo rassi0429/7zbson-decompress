@@ -44,6 +44,15 @@ namespace _7zbson_decompress.Controllers
 
         [HttpPost]
         [DisableRequestSizeLimit]
+        [Route("decompress")]
+        public string Post(IFormFile file)
+        {
+            Stream stm = file.OpenReadStream();
+            return getJsonFrom7zbson(stm);
+        }
+
+        [HttpPost]
+        [DisableRequestSizeLimit]
         [Route("compress")]
         [Route("")]
         async public Task<FileContentResult> Post()
