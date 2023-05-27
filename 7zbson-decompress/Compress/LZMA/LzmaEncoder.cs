@@ -300,6 +300,7 @@ namespace SevenZip.Compression.LZMA
 			public void MakeAsShortRep() { BackPrev = 0; ; Prev1IsChar = false; }
 			public bool IsShortRep() { return (BackPrev == 0); }
 		};
+
 		Optimal[] _optimum = new Optimal[kNumOpts];
 		LZ.IMatchFinder _matchFinder = null;
 		RangeCoder.Encoder _rangeEncoder = new RangeCoder.Encoder();

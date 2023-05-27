@@ -1,22 +1,12 @@
 {
-  "$schema": "https://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:22460",
-      "sslPort": 0
-    }
-  },
   "profiles": {
     "_7zbson_decompress": {
       "commandName": "Project",
-      "launchBrowser": true,
       "launchUrl": "api/todoitems",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://0.0.0.0:7099;http://0.0.0.0:5099",
+      "applicationUrl": "",
       "dotnetRunMessages": true
     },
     "IIS Express": {
@@ -26,6 +16,22 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "プロファイル 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\neo\\GitHub\\7zbson-decompress\\7zbson-decompress\\bin\\Debug\\net6.0\\7zbson-decompress.exe"
+    },
+    "プロファイル 2": {
+      "commandName": "Project"
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:22460",
+      "sslPort": 0
     }
   }
 }

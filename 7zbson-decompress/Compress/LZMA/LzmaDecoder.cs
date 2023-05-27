@@ -5,6 +5,7 @@ using System;
 namespace SevenZip.Compression.LZMA
 {
 	using RangeCoder;
+	using System.Diagnostics;
 
 	public class Decoder : ICoder, ISetDecoderProperties // ,System.IO.Stream
 	{
@@ -197,6 +198,7 @@ namespace SevenZip.Compression.LZMA
 		bool _solid = false;
 		void Init(System.IO.Stream inStream, System.IO.Stream outStream)
 		{
+			Console.WriteLine("Init Position: " + inStream.Position);
 			m_RangeDecoder.Init(inStream);
 			m_OutWindow.Init(outStream, _solid);
 
@@ -230,6 +232,7 @@ namespace SevenZip.Compression.LZMA
 		public void Code(System.IO.Stream inStream, System.IO.Stream outStream,
 			Int64 inSize, Int64 outSize, ICodeProgress progress)
 		{
+			Console.WriteLine("Code init: " + inStream.Position);
 			Init(inStream, outStream);
 
 			Base.State state = new Base.State();
@@ -244,16 +247,30 @@ namespace SevenZip.Compression.LZMA
 					throw new DataErrorException();
 				state.UpdateChar();
 				byte b = m_LiteralDecoder.DecodeNormal(m_RangeDecoder, 0, 0);
+				Console.WriteLine("b: " + b);
 				m_OutWindow.PutByte(b);
 				nowPos64++;
-			}
-			while (nowPos64 < outSize64)
+            }
+            uint count = 0;
+            while (nowPos64 < outSize64)
 			{
 				// UInt64 next = Math.Min(nowPos64 + (1 << 18), outSize64);
-					// while(nowPos64 < next)
+				// while(nowPos64 < next)
 				{
+					count++;
 					uint posState = (uint)nowPos64 & m_PosStateMask;
-					if (m_IsMatchDecoders[(state.Index << Base.kNumPosStatesBitsMax) + posState].Decode(m_RangeDecoder) == 0)
+                    // Console.WriteLine("posState: " + posState);
+                    Console.WriteLine("nowPos64: " + nowPos64 + " " + count);
+                    // Console.WriteLine("outSize64: " + outSize64);
+
+					if(nowPos64 > 2097159)
+					{
+						Debugger.Break();
+					}
+
+					uint matchDecodeResult = m_IsMatchDecoders[(state.Index << Base.kNumPosStatesBitsMax) + posState].Decode(m_RangeDecoder);
+					// Console.WriteLine("matchDecodeResult: " + matchDecodeResult);
+                    if (matchDecodeResult == 0)
 					{
 						byte b;
 						byte prevByte = m_OutWindow.GetByte(0);
@@ -262,6 +279,9 @@ namespace SevenZip.Compression.LZMA
 								(uint)nowPos64, prevByte, m_OutWindow.GetByte(rep0));
 						else
 							b = m_LiteralDecoder.DecodeNormal(m_RangeDecoder, (uint)nowPos64, prevByte);
+						// Console.WriteLine("isCharState: " + state.IsCharState());
+						// Console.WriteLine("b: " + b);
+						// Console.WriteLine("prevByte: " + prevByte);
 						m_OutWindow.PutByte(b);
 						state.UpdateChar();
 						nowPos64++;
@@ -269,16 +289,21 @@ namespace SevenZip.Compression.LZMA
 					else
 					{
 						uint len;
-						if (m_IsRepDecoders[state.Index].Decode(m_RangeDecoder) == 1)
+						uint repResult = m_IsRepDecoders[state.Index].Decode(m_RangeDecoder);
+                        //  Console.WriteLine("repResult: " + repResult);
+                        if (repResult == 1)
 						{
-							if (m_IsRepG0Decoders[state.Index].Decode(m_RangeDecoder) == 0)
+							uint RepGoResult = m_IsRepG0Decoders[state.Index].Decode(m_RangeDecoder);
+                            // Console.WriteLine("RepG0Result: " + RepGoResult);
+                            if (RepGoResult == 0)
 							{
 								if (m_IsRep0LongDecoders[(state.Index << Base.kNumPosStatesBitsMax) + posState].Decode(m_RangeDecoder) == 0)
 								{
 									state.UpdateShortRep();
 									m_OutWindow.PutByte(m_OutWindow.GetByte(rep0));
 									nowPos64++;
-									continue;
+                                    // Console.WriteLine("Continue!!!");
+                                    continue;
 								}
 							}
 							else
@@ -329,8 +354,12 @@ namespace SevenZip.Compression.LZMA
 							}
 							else
 								rep0 = posSlot;
-						}
-						if (rep0 >= m_OutWindow.TrainSize + nowPos64 || rep0 >= m_DictionarySizeCheck)
+                        }
+                        // Console.WriteLine("rep0: " + rep0);
+                        // Console.WriteLine("this.m_OutWindow.TrainSize: " + m_OutWindow.TrainSize);
+                        // Console.WriteLine("nowPos64: " + nowPos64);
+                        // Console.WriteLine("this.m_DictionarySizeCheck: " + m_DictionarySizeCheck);
+                        if (rep0 >= m_OutWindow.TrainSize + nowPos64 || rep0 >= m_DictionarySizeCheck)
 						{
 							if (rep0 == 0xFFFFFFFF)
 								break;

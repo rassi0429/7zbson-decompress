@@ -27,7 +27,7 @@ class HogeClass
 
     public static string getJsonFrom7zbson(string str)
     {
-        string pathSource = @"C:\Users\kokoa\Desktop\Box.7zbson";
+        string pathSource = @"C:\Users\neo\GitHub\JS_7ZBSON_example\MultiTool.7zbson";
         using (FileStream inStream = new FileStream(pathSource, FileMode.Open, FileAccess.Read))
         {
             using (MemoryStream outStream = new MemoryStream())
